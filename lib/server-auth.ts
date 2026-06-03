@@ -1,13 +1,31 @@
 import { randomBytes, scrypt as scryptCallback, timingSafeEqual } from "crypto";
 import { mkdir, readFile, writeFile } from "fs/promises";
+import { tmpdir } from "os";
 import path from "path";
 import { promisify } from "util";
 import { adminMobileNumber, normalizeMobile } from "@/lib/auth";
 
 const scrypt = promisify(scryptCallback);
-const dbPath = path.join(process.cwd(), "data", "auth-db.json");
+const dbPath = getAuthDatabasePath();
 const sessionTtlMs = 1000 * 60 * 60 * 24 * 7;
 const defaultAdminPassword = process.env.SLNS_ADMIN_PASSWORD ?? "admin123";
+
+function getAuthDatabasePath() {
+  if (process.env.SLNS_AUTH_DB_PATH) {
+    return process.env.SLNS_AUTH_DB_PATH;
+  }
+
+  const isReadOnlyDeployment =
+    process.cwd().startsWith("/var/task") ||
+    Boolean(process.env.VERCEL) ||
+    Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME);
+
+  if (isReadOnlyDeployment) {
+    return path.join(tmpdir(), "slns-enterprises", "auth-db.json");
+  }
+
+  return path.join(process.cwd(), "data", "auth-db.json");
+}
 
 export interface StoredUser {
   id: string;
