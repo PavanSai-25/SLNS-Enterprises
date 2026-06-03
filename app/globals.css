@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(245, 158, 11, 0.12), transparent 28%),
+    radial-gradient(circle at 90% 5%, rgba(15, 118, 110, 0.14), transparent 26%),
+    #f8fafc;
+  color: #111827;
+}
+
+.dark body {
+  background:
+    radial-gradient(circle at 10% 10%, rgba(245, 158, 11, 0.09), transparent 28%),
+    radial-gradient(circle at 90% 5%, rgba(20, 184, 166, 0.12), transparent 26%),
+    #09090b;
+  color: #f8fafc;
+}
+
+@layer components {
+  .glass-panel {
+    @apply border border-white/40 bg-white/75 shadow-glow backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/70;
+  }
+
+  .field {
+    @apply w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-600/10 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100;
+  }
+
+  .label {
+    @apply text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-800 focus:outline-none focus:ring-4 focus:ring-teal-700/20 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-2.5 text-sm font-semibold text-zinc-900 transition hover:bg-zinc-50 focus:outline-none focus:ring-4 focus:ring-zinc-300/30 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800;
+  }
+}
