@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Pencil } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
-import { loadBooking, saveBooking } from "@/lib/mock-api";
+import { loadBooking, saveBooking, saveBookingRequest } from "@/lib/mock-api";
 import { formatCurrency, getChauffeurRate } from "@/lib/pricing";
 import type { Booking } from "@/lib/types";
 
@@ -27,7 +27,10 @@ export default function CheckoutPage() {
   }
 
   function confirmBooking() {
-    if (booking) saveBooking(booking);
+    if (booking) {
+      saveBooking(booking);
+      saveBookingRequest(booking);
+    }
     router.push("/invoice");
   }
 

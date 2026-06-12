@@ -10,10 +10,11 @@ import { isAdminSession, loadSessionUser } from "@/lib/auth";
 import { getCurrentUser, logoutUser } from "@/lib/client-auth";
 
 const navItems = [
-  { href: "/dashboard", label: "Book" },
-  { href: "/checkout", label: "Checkout" },
-  { href: "/invoice", label: "Invoice" },
-  { href: "/admin/vehicles", label: "Admin" }
+  { href: "/dashboard", label: "Book", adminOnly: false },
+  { href: "/checkout", label: "Checkout", adminOnly: false },
+  { href: "/invoice", label: "Invoice", adminOnly: false },
+  { href: "/admin/vehicles", label: "Admin", adminOnly: true },
+  { href: "/admin/bookings", label: "Bookings", adminOnly: true }
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -39,7 +40,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     void getCurrentUser().then((user) => setIsAdmin(user?.role === "admin"));
   }, [pathname]);
 
-  const visibleNavItems = navItems.filter((item) => item.href !== "/admin/vehicles" || isAdmin);
+  const visibleNavItems = navItems.filter((item) => !item.adminOnly || isAdmin);
 
   async function logout() {
     await logoutUser();

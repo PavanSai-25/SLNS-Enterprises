@@ -2,6 +2,7 @@ export type VehicleType = "5 Seater" | "7 Seater" | "7 Seater SUV";
 export type RentalType = "Self Drive" | "Chauffeur";
 export type FuelType = "Petrol" | "Diesel" | "Hybrid";
 export type Transmission = "Manual" | "Automatic";
+export type BookingStatus = "Requested" | "Confirmed" | "Completed" | "Cancelled";
 
 export interface VehicleImage {
   id: string;
@@ -55,4 +56,9 @@ export interface Booking extends BookingDraft {
   invoiceNumber: string;
   pricing: PricingBreakdown;
   createdAt: string;
+}
+
+export interface BookingRequest extends Booking {
+  status: BookingStatus;
+  updatedAt: string;
 }

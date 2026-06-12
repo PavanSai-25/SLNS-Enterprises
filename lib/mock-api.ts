@@ -1,4 +1,4 @@
-import type { Booking, BookingDraft, Vehicle } from "@/lib/types";
+import type { Booking, BookingDraft, BookingRequest, BookingStatus, Vehicle } from "@/lib/types";
 import { calculatePricing } from "@/lib/pricing";
 
 export const vehicles: Vehicle[] = [
@@ -86,6 +86,7 @@ export const vehicles: Vehicle[] = [
 
 const wait = (ms = 250) => new Promise((resolve) => setTimeout(resolve, ms));
 const fleetStorageKey = "slns-fleet";
+const bookingRequestsStorageKey = "slns-booking-requests";
 
 function canUseStorage() {
   return typeof window !== "undefined" && Boolean(window.localStorage);
@@ -135,6 +136,50 @@ export function saveBooking(booking: Booking) {
   if (typeof window !== "undefined") {
     window.localStorage.setItem("slns-booking", JSON.stringify(booking));
   }
+}
+
+export function loadBookingRequests(): BookingRequest[] {
+  if (!canUseStorage()) return [];
+
+  const stored = window.localStorage.getItem(bookingRequestsStorageKey);
+  if (!stored) return [];
+
+  try {
+    return (JSON.parse(stored) as BookingRequest[]).map((booking) => ({
+      ...booking,
+      pricing: calculatePricing(booking)
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export function saveBookingRequest(booking: Booking) {
+  if (!canUseStorage()) return;
+
+  const requests = loadBookingRequests();
+  const now = new Date().toISOString();
+  const request: BookingRequest = {
+    ...booking,
+    pricing: calculatePricing(booking),
+    status: "Requested",
+    updatedAt: now
+  };
+  const nextRequests = requests.some((item) => item.id === booking.id)
+    ? requests.map((item) => (item.id === booking.id ? { ...item, ...request, status: item.status, updatedAt: now } : item))
+    : [request, ...requests];
+
+  window.localStorage.setItem(bookingRequestsStorageKey, JSON.stringify(nextRequests));
+}
+
+export function updateBookingRequestStatus(id: string, status: BookingStatus) {
+  if (!canUseStorage()) return [];
+
+  const nextRequests = loadBookingRequests().map((booking) =>
+    booking.id === id ? { ...booking, status, updatedAt: new Date().toISOString() } : booking
+  );
+  window.localStorage.setItem(bookingRequestsStorageKey, JSON.stringify(nextRequests));
+  return nextRequests;
 }
 
 export function loadBooking(): Booking | null {
